@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  displayName String   @db.VarChar(255)
+  password    String   @db.VarChar(8)
+  email       String   @db.VarChar(255)
+  role        Role     @default(USER)
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([email])
+  @@map("tbl_user")
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  nama_barang  String   @db.VarChar(255)
+  quantity     Int
+  total_amount Int
+  category     String   @db.VarChar(255)
+  user         User?    @relation(fields: [userId], references: [id])
+  userId       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("tbl_order")
+}
+
+model Barang {
+  id             String   @id @default(cuid())
+  id_name        String   @db.VarChar(255)
+  name           String   @db.VarChar(255)
+  images         String   @db.VarChar(255)
+  banner         String
+  description    String
+  field_one      Json
+  field_two      Json?
+  field_value    String
+  topup_value    Json
+  download_one   String?
+  download_two   String?
+  download_three String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("tbl_barang")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
